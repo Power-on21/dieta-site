@@ -8,3 +8,166 @@
 export interface HealthStatus {
   status: string;
 }
+
+export interface AuthUser {
+  id: string;
+  /** @nullable */
+  email: string | null;
+  /** @nullable */
+  firstName: string | null;
+  /** @nullable */
+  lastName: string | null;
+  /** @nullable */
+  profileImageUrl: string | null;
+}
+
+export interface AuthUserEnvelope {
+  user: AuthUser | null;
+}
+
+export interface MobileTokenExchangeRequest {
+  /** @minLength 1 */
+  code: string;
+  /** @minLength 1 */
+  code_verifier: string;
+  /** @minLength 1 */
+  redirect_uri: string;
+  /** @minLength 1 */
+  state: string;
+  /** @minLength 1 */
+  nonce?: string;
+}
+
+export interface MobileTokenExchangeSuccess {
+  token: string;
+}
+
+export const LogoutSuccessValue = {
+  success: true,
+} as const;
+export type LogoutSuccess = typeof LogoutSuccessValue;
+
+export interface ErrorEnvelope {
+  error: string;
+}
+
+export type DietProfileInputGender =
+  (typeof DietProfileInputGender)[keyof typeof DietProfileInputGender];
+
+export const DietProfileInputGender = {
+  male: "male",
+  female: "female",
+} as const;
+
+export type DietProfileInputActivityLevel =
+  (typeof DietProfileInputActivityLevel)[keyof typeof DietProfileInputActivityLevel];
+
+export const DietProfileInputActivityLevel = {
+  sedentary: "sedentary",
+  light: "light",
+  moderate: "moderate",
+  active: "active",
+  very_active: "very_active",
+} as const;
+
+export type DietProfileInputGoal =
+  (typeof DietProfileInputGoal)[keyof typeof DietProfileInputGoal];
+
+export const DietProfileInputGoal = {
+  lose: "lose",
+  maintain: "maintain",
+  gain: "gain",
+} as const;
+
+export interface DietProfileInput {
+  /**
+   * @minimum 1
+   * @maximum 120
+   */
+  age: number;
+  gender: DietProfileInputGender;
+  /**
+   * @minimum 20
+   * @maximum 500
+   */
+  weightKg: number;
+  /**
+   * @minimum 50
+   * @maximum 300
+   */
+  heightCm: number;
+  activityLevel: DietProfileInputActivityLevel;
+  goal: DietProfileInputGoal;
+  /** @nullable */
+  restrictions?: string | null;
+}
+
+export interface DietProfile {
+  id: string;
+  userId: string;
+  age: number;
+  gender: string;
+  weightKg: number;
+  heightCm: number;
+  activityLevel: string;
+  goal: string;
+  /** @nullable */
+  restrictions?: string | null;
+  tmb: number;
+  tdee: number;
+  targetCalories: number;
+}
+
+export interface DietProfileEnvelope {
+  profile: DietProfile | null;
+}
+
+export interface Food {
+  name: string;
+  quantity: string;
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+}
+
+export interface Meal {
+  name: string;
+  time: string;
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  foods: Food[];
+}
+
+export interface DietPlan {
+  totalCalories: number;
+  totalProtein: number;
+  totalCarbs: number;
+  totalFat: number;
+  meals: Meal[];
+}
+
+export interface DietPlanEnvelope {
+  plan: DietPlan;
+  profile: DietProfile;
+}
+
+/**
+ * Opaque session token — `Bearer <sid>`.
+ */
+export type AuthorizationSessionHeaderParameter = string;
+
+export type BeginBrowserLoginParams = {
+  /**
+   * Relative path to redirect to after login (must start with `/`). Defaults to `/`.
+   */
+  returnTo?: string;
+};
+
+export type HandleBrowserLoginCallbackParams = {
+  code?: string;
+  state?: string;
+  iss?: string;
+};

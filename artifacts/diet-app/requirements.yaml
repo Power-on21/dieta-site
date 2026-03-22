@@ -1,0 +1,19 @@
+packages:
+  "framer-motion": "For page transitions, smooth UI animations, and staggered list reveals"
+  "react-hook-form": "For robust form state management in the profile setup"
+  "@hookform/resolvers": "Zod resolver for seamless form validation"
+  "zod": "Schema validation for the diet profile input"
+  "clsx": "Utility for conditionally joining classNames"
+  "tailwind-merge": "Utility for merging tailwind classes safely"
+
+images:
+  - path: "artifacts/diet-app/public/images/hero-healthy.png"
+    description: "A beautiful, bright, clean flatlay of fresh healthy foods, green vegetables, avocado, and nuts on a light background. High-end editorial photography style, vibrant colors, plenty of negative space."
+    aspect_ratio: "16:9"
+  - path: "artifacts/diet-app/public/images/abstract-green.png"
+    description: "An elegant, subtle abstract gradient background in very light mint and emerald green tones, soft blurred overlapping shapes, modern clean aesthetic."
+    aspect_ratio: "16:9"
+
+notes:
+  - Using Replit Auth from @workspace/replit-auth-web for Google Login
+  - Diet plan features use React Query generated hooks from @workspace/api-client-react

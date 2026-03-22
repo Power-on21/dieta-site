@@ -14,3 +14,230 @@ import * as zod from "zod";
 export const HealthCheckResponse = zod.object({
   status: zod.string(),
 });
+
+/**
+ * @summary Get the currently authenticated user
+ */
+export const GetCurrentAuthUserHeader = zod.object({
+  Authorization: zod
+    .string()
+    .optional()
+    .describe("Opaque session token — `Bearer <sid>`."),
+});
+
+export const GetCurrentAuthUserResponse = zod.object({
+  user: zod.union([
+    zod.object({
+      id: zod.string(),
+      email: zod.string().email().nullable(),
+      firstName: zod.string().nullable(),
+      lastName: zod.string().nullable(),
+      profileImageUrl: zod.string().nullable(),
+    }),
+    zod.null(),
+  ]),
+});
+
+/**
+ * @summary Start the browser OIDC login flow
+ */
+export const BeginBrowserLoginQueryParams = zod.object({
+  returnTo: zod.coerce
+    .string()
+    .optional()
+    .describe(
+      "Relative path to redirect to after login (must start with `\/`). Defaults to `\/`.",
+    ),
+});
+
+/**
+ * @summary Complete the browser OIDC login flow
+ */
+export const HandleBrowserLoginCallbackQueryParams = zod.object({
+  code: zod.coerce.string().optional(),
+  state: zod.coerce.string().optional(),
+  iss: zod.coerce.string().url().optional(),
+});
+
+/**
+ * @summary Clear the session and begin OIDC logout
+ */
+export const LogoutBrowserSessionHeader = zod.object({
+  Authorization: zod
+    .string()
+    .optional()
+    .describe("Opaque session token — `Bearer <sid>`."),
+});
+
+/**
+ * @summary Exchange a mobile OIDC code for a session token
+ */
+
+export const ExchangeMobileAuthorizationCodeBody = zod.object({
+  code: zod.string().min(1),
+  code_verifier: zod.string().min(1),
+  redirect_uri: zod.string().url().min(1),
+  state: zod.string().min(1),
+  nonce: zod.string().min(1).optional(),
+});
+
+export const ExchangeMobileAuthorizationCodeResponse = zod.object({
+  token: zod.string(),
+});
+
+/**
+ * @summary Delete a mobile session token
+ */
+export const LogoutMobileSessionHeader = zod.object({
+  Authorization: zod
+    .string()
+    .optional()
+    .describe("Opaque session token — `Bearer <sid>`."),
+});
+
+export const LogoutMobileSessionResponse = zod.object({
+  success: zod.boolean(),
+});
+
+/**
+ * @summary Get user diet profile
+ */
+export const GetDietProfileHeader = zod.object({
+  Authorization: zod
+    .string()
+    .optional()
+    .describe("Opaque session token — `Bearer <sid>`."),
+});
+
+export const GetDietProfileResponse = zod.object({
+  profile: zod.union([
+    zod.object({
+      id: zod.string(),
+      userId: zod.string(),
+      age: zod.number(),
+      gender: zod.string(),
+      weightKg: zod.number(),
+      heightCm: zod.number(),
+      activityLevel: zod.string(),
+      goal: zod.string(),
+      restrictions: zod.string().nullish(),
+      tmb: zod.number(),
+      tdee: zod.number(),
+      targetCalories: zod.number(),
+    }),
+    zod.null(),
+  ]),
+});
+
+/**
+ * @summary Save or update user diet profile
+ */
+export const SaveDietProfileHeader = zod.object({
+  Authorization: zod
+    .string()
+    .optional()
+    .describe("Opaque session token — `Bearer <sid>`."),
+});
+
+export const saveDietProfileBodyAgeMax = 120;
+
+export const saveDietProfileBodyWeightKgMin = 20;
+export const saveDietProfileBodyWeightKgMax = 500;
+
+export const saveDietProfileBodyHeightCmMin = 50;
+export const saveDietProfileBodyHeightCmMax = 300;
+
+export const SaveDietProfileBody = zod.object({
+  age: zod.number().min(1).max(saveDietProfileBodyAgeMax),
+  gender: zod.enum(["male", "female"]),
+  weightKg: zod
+    .number()
+    .min(saveDietProfileBodyWeightKgMin)
+    .max(saveDietProfileBodyWeightKgMax),
+  heightCm: zod
+    .number()
+    .min(saveDietProfileBodyHeightCmMin)
+    .max(saveDietProfileBodyHeightCmMax),
+  activityLevel: zod.enum([
+    "sedentary",
+    "light",
+    "moderate",
+    "active",
+    "very_active",
+  ]),
+  goal: zod.enum(["lose", "maintain", "gain"]),
+  restrictions: zod.string().nullish(),
+});
+
+export const SaveDietProfileResponse = zod.object({
+  profile: zod.union([
+    zod.object({
+      id: zod.string(),
+      userId: zod.string(),
+      age: zod.number(),
+      gender: zod.string(),
+      weightKg: zod.number(),
+      heightCm: zod.number(),
+      activityLevel: zod.string(),
+      goal: zod.string(),
+      restrictions: zod.string().nullish(),
+      tmb: zod.number(),
+      tdee: zod.number(),
+      targetCalories: zod.number(),
+    }),
+    zod.null(),
+  ]),
+});
+
+/**
+ * @summary Get the user personalized diet plan
+ */
+export const GetDietPlanHeader = zod.object({
+  Authorization: zod
+    .string()
+    .optional()
+    .describe("Opaque session token — `Bearer <sid>`."),
+});
+
+export const GetDietPlanResponse = zod.object({
+  plan: zod.object({
+    totalCalories: zod.number(),
+    totalProtein: zod.number(),
+    totalCarbs: zod.number(),
+    totalFat: zod.number(),
+    meals: zod.array(
+      zod.object({
+        name: zod.string(),
+        time: zod.string(),
+        calories: zod.number(),
+        protein: zod.number(),
+        carbs: zod.number(),
+        fat: zod.number(),
+        foods: zod.array(
+          zod.object({
+            name: zod.string(),
+            quantity: zod.string(),
+            calories: zod.number(),
+            protein: zod.number(),
+            carbs: zod.number(),
+            fat: zod.number(),
+          }),
+        ),
+      }),
+    ),
+  }),
+  profile: zod.object({
+    id: zod.string(),
+    userId: zod.string(),
+    age: zod.number(),
+    gender: zod.string(),
+    weightKg: zod.number(),
+    heightCm: zod.number(),
+    activityLevel: zod.string(),
+    goal: zod.string(),
+    restrictions: zod.string().nullish(),
+    tmb: zod.number(),
+    tdee: zod.number(),
+    targetCalories: zod.number(),
+  }),
+});
